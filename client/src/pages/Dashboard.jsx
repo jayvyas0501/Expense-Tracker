@@ -13,7 +13,7 @@ export default function Dashboard() {
   const fetchExpenses = async () => {
     try {
       const token = localStorage.getItem("token");
-      const { data } = await api.get("/expenses", {
+      const { data } = await api.post("/expenses", {
         headers: { Authorization: `Bearer ${token}` }
       });
       setExpenses(data.expenses);

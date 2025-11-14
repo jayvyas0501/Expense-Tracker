@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 
-const ExpenseTable = ({ expenses, handleDelete }) => {
+const ExpenseTable = ({ expenses, handleDelete, handleEdit }) => {
   return (
     <div className="mt-6 p-4 bg-white shadow rounded-lg">
       <h3 className="text-xl font-semibold mb-3">Recent Expenses</h3>
@@ -13,7 +13,7 @@ const ExpenseTable = ({ expenses, handleDelete }) => {
               <th className="p-2 text-left">Amount</th>
               <th className="p-2 text-left">Category</th>
               <th className="p-2 text-left">Date</th>
-              <th className="p-2 text-center">Action</th>
+              <th className="p-2 text-center">Actions</th>
             </tr>
           </thead>
 
@@ -24,7 +24,15 @@ const ExpenseTable = ({ expenses, handleDelete }) => {
                 <td className="p-2">₹{exp.amount}</td>
                 <td className="p-2">{exp.category}</td>
                 <td className="p-2">{exp.date?.split("T")[0]}</td>
-                <td className="p-2 text-center">
+
+                <td className="p-2 flex gap-2 justify-center">
+                  <Button
+                    size="sm"
+                    onClick={() => handleEdit(exp)}
+                  >
+                    Edit
+                  </Button>
+
                   <Button
                     variant="destructive"
                     size="sm"

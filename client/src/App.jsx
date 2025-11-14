@@ -12,14 +12,16 @@ const App = () => {
 return (
 <BrowserRouter>
 <div className="min-h-screen bg-gray-50">
-<header className="p-4">
-<Button>Example</Button>
-</header>
-
-
 <main className="p-4">
 <Routes>
-<Route index element={<Home />} />
+<Route
+  path="/"
+  element={
+    <ProtectedRoute>
+      <Home />
+    </ProtectedRoute>
+  }
+/>
 <Route path="/login" element={<Login />} />
 <Route path="/register" element={<Register />} />
 <Route

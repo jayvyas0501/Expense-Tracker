@@ -17,62 +17,38 @@ export const addExpense = async (req, res) => {
 }
 
 export const allExpenses = async (req, res) => {
-    try {
-        const { category, date, sort, page = 1, limit = 50 } = req.query;
+  try {
+    // const { date } = req.query;
 
-        const filter = { user: req.userId };
+    const filter = { user: req.userId };
 
-        // Category filter
-        if (category) filter.category = category;
+    // if (date) {
+    //   const selected = new Date(date);
+    //   const nextDay = new Date(date);
+    //   nextDay.setDate(nextDay.getDate() + 1);
 
-        // SINGLE DATE filter
-        if (date) {
-            const selected = new Date(date);
-            const nextDay = new Date(date);
-            nextDay.setDate(nextDay.getDate() + 1);
+    //   filter.date = {
+    //     $gte: selected,
+    //     $lt: nextDay
+    //   };
+    // }
 
-            filter.date = {
-                $gte: selected,
-                $lt: nextDay
-            };
-        }
+    const expenses = await Expense.find(filter);
 
-        // Sorting logic
-        let sortOption = { date: -1 };
-        if (sort) {
-            const field = sort.replace("-", "");
-            sortOption[field] = sort.startsWith("-") ? -1 : 1;
-        }
+    // Simple sum without aggregation
+    const totalAmount = expenses.reduce((sum, exp) => sum + exp.amount, 0);
 
-        const skip = (page - 1) * limit;
-
-        const expenses = await Expense.find(filter)
-            .sort(sortOption)
-            .skip(skip)
-            .limit(Number(limit));
-
-        const totalCount = await Expense.countDocuments(filter);
-
-        const totalAmountAgg = await Expense.aggregate([
-            { $match: filter },
-            { $group: { _id: null, total: { $sum: "$amount" } } }
-        ]);
-
-        const totalAmount = totalAmountAgg[0]?.total || 0;
-
-        res.status(200).json({
-            message: "Expenses fetched successfully",
-            totalAmount,
-            count: expenses.length,
-            currentPage: Number(page),
-            totalPages: Math.ceil(totalCount / limit),
-            expenses,
-        });
-
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
+    res.status(200).json({
+      message: "Expenses fetched successfully",
+      totalAmount,
+      expenses,
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };
+
+
 
 export const updateExpense = async (req, res) => {
     try {

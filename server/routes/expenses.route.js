@@ -4,7 +4,7 @@ import { addExpense, allExpenses, deleteExpense, updateExpense } from '../contro
 const router = express.Router()
 
 router.post("/",allExpenses);
-router.post("/",addExpense);
+router.post("/add",addExpense);
 router.put("/:id",updateExpense);
 router.delete("/:id",deleteExpense);
 

@@ -21,7 +21,7 @@ const Login = () => {
       localStorage.setItem("token", data.token);
 
       alert("Login Successful!");
-      window.location.href = "/dashboard";
+      window.location.href = "/";
     } catch (err) {
       alert(err.response?.data?.message || "Login failed");
     }

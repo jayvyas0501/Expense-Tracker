@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import api from "../lib/axios";
-
+import EditExpenseModal from "@/components/EditExpenseModal";
 import AddExpenseForm from "@/components/AddExpenseForm";
-import Filters from "@/components/Filters";
+// import Filters from "@/components/Filters";
 import ExpenseTable from "@/components/ExpenseTable";
 import SummaryCards from "@/components/SummaryCards";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,25 @@ const Home = () => {
   const [filterCategory, setFilterCategory] = useState("");
   const [filterDate, setFilterDate] = useState(""); // only one date filter
   const [sort, setSort] = useState("");
+
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editedExpense, setEditedExpense] = useState(null);
+
+  const handleEdit = (expense) => {
+    setEditedExpense(expense);
+    setEditModalOpen(true);
+  };
+
+  const handleUpdateExpense = async () => {
+    try {
+      await api.put(`/expenses/${editedExpense._id}`, editedExpense);
+      setEditModalOpen(false);
+      fetchExpenses();
+    } catch (err) {
+      alert("Update failed");
+    }
+  };
+
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -49,7 +68,7 @@ const Home = () => {
     e.preventDefault();
 
     try {
-      await api.post("/expenses", {
+      await api.post("/expenses/add", {
         title,
         amount,
         category,
@@ -82,12 +101,21 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <div className="bg-white p-4 shadow flex justify-between">
+      <div className="bg-white p-4 shadow flex justify-between items-center">
         <h1 className="text-xl font-bold">Expense Tracker</h1>
-        <Button variant="destructive" onClick={handleLogout}>
-          Logout
-        </Button>
+        <div className="flex gap-2">
+          {/* Dashboard Button */}
+          <Button variant="default" onClick={() => window.location.href = "/dashboard"}>
+            Dashboard
+          </Button>
+
+          {/* Logout Button */}
+          <Button variant="destructive" onClick={handleLogout}>
+            Logout
+          </Button>
+        </div>
       </div>
+
 
       <div className="max-w-4xl mx-auto p-5 space-y-6">
         <SummaryCards totalAmount={totalAmount} count={expenses.length} />
@@ -105,7 +133,7 @@ const Home = () => {
         />
 
         {/* Filters + Table grouped closer */}
-        <Filters
+        {/* <Filters
           filterCategory={filterCategory}
           filterDate={filterDate}
           sort={sort}
@@ -113,9 +141,17 @@ const Home = () => {
           setFilterDate={setFilterDate}
           setSort={setSort}
           fetchExpenses={fetchExpenses}
-        />
+        /> */}
 
-        <ExpenseTable expenses={expenses} handleDelete={handleDelete} />
+        <ExpenseTable expenses={expenses} handleDelete={handleDelete} handleEdit={handleEdit} />
+
+        <EditExpenseModal
+          open={editModalOpen}
+          setOpen={setEditModalOpen}
+          editedExpense={editedExpense}
+          setEditedExpense={setEditedExpense}
+          handleUpdateExpense={handleUpdateExpense}
+        />
       </div>
     </div>
   );
