@@ -18,31 +18,48 @@ export const addExpense = async (req, res) => {
 
 export const allExpenses = async (req, res) => {
   try {
-    // const { date } = req.query;
+    const { category, startDate, endDate, sort } = req.body.params || {};
 
     const filter = { user: req.userId };
 
-    // if (date) {
-    //   const selected = new Date(date);
-    //   const nextDay = new Date(date);
-    //   nextDay.setDate(nextDay.getDate() + 1);
+    if (category && category !== "All") {
+      filter.category = category;
+    }
 
-    //   filter.date = {
-    //     $gte: selected,
-    //     $lt: nextDay
-    //   };
-    // }
+    if (startDate || endDate) {
+      filter.date = {};
+      if (startDate) filter.date.$gte = new Date(startDate);
+      if (endDate) {
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        filter.date.$lte = end;
+      }
+    }
 
-    const expenses = await Expense.find(filter);
+    console.log(filter)
 
-    // Simple sum without aggregation
+    let query = Expense.find(filter);
+
+    if (sort) {
+      const sortOption = {};
+      if (sort.startsWith("-")) {
+        sortOption[sort.substring(1)] = -1;
+      } else {
+        sortOption[sort] = 1;
+      }
+      query = query.sort(sortOption);
+    }
+
+    const expenses = await query;
+
     const totalAmount = expenses.reduce((sum, exp) => sum + exp.amount, 0);
 
     res.status(200).json({
-      message: "Expenses fetched successfully",
+      message: "Expenses fetched",
       totalAmount,
-      expenses,
+      expenses
     });
+
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
