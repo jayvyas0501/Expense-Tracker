@@ -38,6 +38,7 @@ const AddExpenseForm = ({
               <SelectItem value="Food">Food</SelectItem>
               <SelectItem value="Travel">Travel</SelectItem>
               <SelectItem value="Shopping">Shopping</SelectItem>
+              <SelectItem value="Bills">Bills</SelectItem>
               <SelectItem value="Other">Other</SelectItem>
             </SelectContent>
           </Select>

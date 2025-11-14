@@ -2,12 +2,21 @@ import { useEffect, useState } from "react";
 import api from "../lib/axios";
 import EditExpenseModal from "@/components/EditExpenseModal";
 import AddExpenseForm from "@/components/AddExpenseForm";
-// import Filters from "@/components/Filters";
+import Filters from "@/components/Filters";
 import ExpenseTable from "@/components/ExpenseTable";
 import SummaryCards from "@/components/SummaryCards";
 import { Button } from "@/components/ui/button";
 
 const Home = () => {
+
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) setUser(JSON.parse(storedUser));
+    fetchExpenses();
+  }, []);
+
   const [expenses, setExpenses] = useState([]);
   const [totalAmount, setTotalAmount] = useState(0);
 
@@ -19,8 +28,10 @@ const Home = () => {
 
   // Filters
   const [filterCategory, setFilterCategory] = useState("");
-  const [filterDate, setFilterDate] = useState(""); // only one date filter
-  const [sort, setSort] = useState("");
+  const [filterStartDate, setFilterStartDate] = useState("");
+  const [filterEndDate, setFilterEndDate] = useState("");
+  const [sort, setSort] = useState(""); // e.g., "date" or "-amount"
+
 
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editedExpense, setEditedExpense] = useState(null);
@@ -43,19 +54,27 @@ const Home = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     window.location.href = "/login";
   };
 
-  // FIXED fetch
+
   const fetchExpenses = async () => {
     try {
+      const token = localStorage.getItem("token");
       const params = {};
 
       if (filterCategory) params.category = filterCategory;
-      if (filterDate) params.startDate = filterDate; // only one
+      if (filterStartDate) params.startDate = filterStartDate;
+      if (filterEndDate) params.endDate = filterEndDate;
       if (sort) params.sort = sort;
 
-      const { data } = await api.post("/expenses", { params });
+      const { data } = await api.post(
+        "/expenses",
+        { params },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
 
       setExpenses(data.expenses);
       setTotalAmount(data.totalAmount);
@@ -63,6 +82,7 @@ const Home = () => {
       console.log(error);
     }
   };
+
 
   const handleAddExpense = async (e) => {
     e.preventDefault();
@@ -118,7 +138,8 @@ const Home = () => {
 
 
       <div className="max-w-4xl mx-auto p-5 space-y-6">
-        <SummaryCards totalAmount={totalAmount} count={expenses.length} />
+        <SummaryCards totalAmount={totalAmount} count={expenses.length} user={user} />
+
 
         <AddExpenseForm
           title={title}
@@ -133,15 +154,18 @@ const Home = () => {
         />
 
         {/* Filters + Table grouped closer */}
-        {/* <Filters
+        <Filters
           filterCategory={filterCategory}
-          filterDate={filterDate}
+          filterStartDate={filterStartDate}
+          filterEndDate={filterEndDate}
           sort={sort}
           setFilterCategory={setFilterCategory}
-          setFilterDate={setFilterDate}
+          setFilterStartDate={setFilterStartDate}
+          setFilterEndDate={setFilterEndDate}
           setSort={setSort}
           fetchExpenses={fetchExpenses}
-        /> */}
+        />
+
 
         <ExpenseTable expenses={expenses} handleDelete={handleDelete} handleEdit={handleEdit} />
 

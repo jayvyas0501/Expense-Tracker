@@ -17,7 +17,7 @@ export default function Dashboard() {
         headers: { Authorization: `Bearer ${token}` }
       });
       setExpenses(data.expenses);
-    } catch (err) {
+    } catch (err) { 
       console.log("Error fetching expenses:", err);
     }
   };

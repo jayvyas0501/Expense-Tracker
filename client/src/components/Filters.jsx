@@ -7,54 +7,66 @@ import {
 } from "@/components/ui/select";
 
 const Filters = ({
-  filterCategory, filterDate, sort,
-  setFilterCategory, setFilterDate, setSort,
+  filterCategory,
+  filterStartDate,
+  filterEndDate,
+  sort,
+  setFilterCategory,
+  setFilterStartDate,
+  setFilterEndDate,
+  setSort,
   fetchExpenses
 }) => {
   return (
     <div className="mb-6 p-4 bg-white shadow rounded-lg">
       <h3 className="text-lg font-semibold mb-3">Filters</h3>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
 
-        {/* CATEGORY FILTER */}
+        {/* CATEGORY */}
         <div>
           <Label>Category</Label>
-          <Select
-            onValueChange={setFilterCategory}
-            value={filterCategory}
-          >
-            <SelectTrigger className="w-full">
+          <Select value={filterCategory} onValueChange={setFilterCategory}>
+            <SelectTrigger>
               <SelectValue placeholder="Category" />
             </SelectTrigger>
-
             <SelectContent>
-              <SelectItem value="all">All</SelectItem>
-              <SelectItem value="food">Food</SelectItem>
-              <SelectItem value="travel">Travel</SelectItem>
-              <SelectItem value="shopping">Shopping</SelectItem>
-              <SelectItem value="bills">Bills</SelectItem>
-              <SelectItem value="other">Other</SelectItem>
+              <SelectItem value="All">All</SelectItem>
+              <SelectItem value="Food">Food</SelectItem>
+              <SelectItem value="Travel">Travel</SelectItem>
+              <SelectItem value="Shopping">Shopping</SelectItem>
+              <SelectItem value="Bills">Bills</SelectItem>
+              <SelectItem value="Other">Other</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
-        {/* DATE FILTER */}
+        {/* START DATE */}
         <div>
-          <Label>Date</Label>
+          <Label>Start Date</Label>
           <Input
             type="date"
-            value={filterDate}
-            onChange={(e) => setFilterDate(e.target.value)}
+            value={filterStartDate}
+            onChange={(e) => setFilterStartDate(e.target.value)}
           />
         </div>
 
-        {/* SORT FILTER */}
+        {/* END DATE */}
+        <div>
+          <Label>End Date</Label>
+          <Input
+            type="date"
+            value={filterEndDate}
+            onChange={(e) => setFilterEndDate(e.target.value)}
+          />
+        </div>
+
+        {/* SORT */}
         <div>
           <Label>Sort</Label>
-          <Select onValueChange={setSort} value={sort}>
+          <Select value={sort} onValueChange={setSort}>
             <SelectTrigger>
-              <SelectValue placeholder="Newest First" />
+              <SelectValue placeholder="Sort By" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="-date">Newest First</SelectItem>
@@ -73,5 +85,6 @@ const Filters = ({
     </div>
   );
 };
+
 
 export default Filters;
